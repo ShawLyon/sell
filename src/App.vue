@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-header></v-header>
+    <v-header :seller="seller"></v-header>
     <div class="tab">
         <div class="tab-item">
           <router-link to="/goods">商品</router-link>
@@ -12,18 +12,40 @@
           <router-link to="/seller">商家</router-link>
         </div>
     </div>
-    <router-view>
-      
+    <router-view> 
     </router-view>
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
 // 引用
 import header from './components/header/header.vue';
+import data from '../data.json';
+// errno状态
+// const ERR_OK = 0;
 // 出口
 export default {
   // name: 'app',
+  data () {
+    return {
+      seller: {}
+    };
+  },
+  // 钩子
+  created () {
+    // this.$http.get('/api/seller').then(response => {
+    //   response = response.body;
+    //   console.log(response);
+    //   if (response.erron === ERR_OK) { // errorn状态匹配
+    //     this.seller = response.data;
+    //     console.log(this.seller);
+    //   }
+    // },
+    // response => {
+    //   // error callback
+    // });
+    this.seller = data.seller;
+  },
   // 注册 v-header
   components: {
     'v-header': header
