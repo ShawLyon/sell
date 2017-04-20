@@ -31,54 +31,73 @@
     <div class="background">
       <img :src="seller.avatar" width="100%" height="100%">
     </div>
-    <!-- 弹出层 -->
-    <div class="detail" v-show="detailShow">
-      <div class="detail-wrap clearfix">
-        <div class="detail-main">
-          {{seller.bulletin}}
-          {{seller.bulletin}}
-          {{seller.bulletin}}
-          {{seller.bulletin}}
-          {{seller.bulletin}}
-          {{seller.bulletin}}
-          {{seller.bulletin}}
-          
-    
+    <transition name="fade">
+      <!-- 弹出层 -->
+      <div class="detail" v-show="detailShow" @click="detailClose" transition="fade">
+        <div class="detail-wrap clearfix">
+          <div class="detail-main">
+            <!-- 标题 -->
+            <h1 class="name">{{seller.name}}</h1>
+            <!-- 星星 -->
+            <star :size="48" :score="seller.score"></star>
+            <!-- 优惠信息 -->
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">优惠信息</div>
+              <div class="line"></div>
+            </div>
+            <ul class="item-support" v-if="seller.supports">
+              <li v-for="(item,index) in seller.supports">
+                <span class="icon" :class="supportsMap[seller.supports[index].type]"></span>
+                <span class="text">{{seller.supports[index].description}}</span>
+              </li>
+            </ul>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">商家公告</div>
+              <div class="line"></div>
+            </div>
+            <div class="bulletin">{{seller.bulletin}}</div>
+          </div>
+        </div>
+        <!-- 关闭x -->
+        <div class="detail-close">
+          <i class="icon-close" v-on:click="detailClose"></i>
         </div>
       </div>
-      <!-- 关闭x -->
-      <div class="detail-close">
-        <i class="icon-close" v-on:click="detailClose"></i>
-      </div>
-      
-    </div>
+    </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  export default {
-    props: {
-      seller: {
-        type: Object
-      }
-    },
-    data () {
-      return {
-        detailShow: false
-      };
-    },
-    methods: {
-      detailOpen () {
-        this.detailShow = true;
-      },
-      detailClose () {
-        this.detailShow = false;
-      }
-    },
-    created () {
-      this.supportsMap = ['decrease_1', 'discount_1', 'special_1', 'invoice_1', 'guarantee_1'];
+import star from '../star/star.vue';
+export default {
+  props: {
+    seller: {
+      type: Object
     }
-  };
+  },
+  data () {
+    return {
+      detailShow: false
+    };
+  },
+  methods: {
+    detailOpen () {
+      this.detailShow = true;
+    },
+    detailClose () {
+      this.detailShow = false;
+    }
+  },
+  created () {
+    this.supportsMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+  },
+  components: {
+    star
+
+  }
+};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus" >
@@ -131,15 +150,15 @@
             vertical-align top
             width 12px
             height 12px
-            &.decrease_1
+            &.decrease
               bg-image('./decrease_1')
-            &.discount_1
+            &.discount
               bg-image('./discount_1')
-            &.guarantee_1
+            &.guarantee
               bg-image('./guarantee_1')
-            &.invoice_1
+            &.invoice
               bg-image('./invoice_1')
-            &.special_1
+            &.special
               bg-image('./special_1')
           .text
             margin-left 4px
@@ -203,20 +222,115 @@
       width 100%
       height 100%
       background rgba(7, 17, 27, .8)
-      // stacike footers 布局
+      -webkit-backdrop-filter blur(10px)
+      transition all .5s
+      /*过度动画*/
+      /*&.fade-transitiono
+        opacity 1
+        background rgba(7,17,27,.8) 
+      &.fade-enter, &.fade-leave 
+        opacity 0
+        background rgba(7,17,27,0) */
+      &.fade-enter-active {
+        animation: fade-in .5s;
+      }
+      &.fade-leave-active {
+        animation: fade-out .5s;
+      }
+      @keyframes fade-in {
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.5);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes fade-out {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.5);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+      /* stacike footers 布局 start */
       .detail-wrap
+        width 100%
         height auto
         min-height 100%
         .detail-main
           margin-top 64px
           padding 0 36px
           padding-bottom 64px
+          .name
+            text-align center
+            font-size 16px
+            font-weight 700
+            line-height 16px
+            color rgb(255, 255, 255)
+          .title
+            display flex
+            margin 28px 0 24px
+            width 100%
+            .text
+              display inline-block
+              flex 1
+              padding 0 12px 
+              text-align center
+              font-size 14px
+              line-height 14px
+              font-weight 700
+              color rgb(255, 255, 255)
+            .line
+              display inline-block
+              flex 1
+              margin-top 7px
+              border-top 1px solid rgba(255, 255, 255, .2)
+          .item-support
+            .text
+              vertical-align top
+              font-size 12px
+              font-weight 200
+              line-height 16px
+              color rgb(255, 255, 255)
+            .icon
+              display inline-block
+              vertical-align top
+              margin-bottom 12px
+              margin-left 12px
+              width 16px
+              height 16px
+              background-size 16px 16px
+              background-repeat no-repeat
+              &.decrease
+                bg-image('./decrease_2')
+              &.discount
+                bg-image('./discount_2')
+              &.special
+                bg-image('./special_2')
+              &.invoice
+                bg-image('./invoice_2')
+              &.guarantee
+                bg-image('./guarantee_2')
+          .bulletin
+            margin 24px 12px 0
+            font-size 12px
+            font-weight 200
+            line-height 24px
+            color rgb(255,255,255)
       .detail-close
         position relative
         width 32px
         height 32px
         margin -64px auto 0 auto
-        // margin-top -64px
         clear both
         font-size 32px
+        color rgba(255, 255, 255, .5)
+      // stacike footers 布局 end
 </style>
