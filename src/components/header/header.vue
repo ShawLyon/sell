@@ -225,12 +225,6 @@ export default {
       -webkit-backdrop-filter blur(10px)
       transition all .5s
       /*过度动画*/
-      /*&.fade-transitiono
-        opacity 1
-        background rgba(7,17,27,.8) 
-      &.fade-enter, &.fade-leave 
-        opacity 0
-        background rgba(7,17,27,0) */
       &.fade-enter-active {
         animation: fade-in .5s;
       }
