@@ -1,39 +1,47 @@
 <template>
-  <div class="goods">
-    <div class="menu-wrap" ref="menuWrap">
-      <ul>
-        <li v-for="(item,index) in goods" class="menu-item" :class="{'current-item': index === currentIndex}" @click="selectMenu(index,$event)">
-          <span class="text">
-            <span v-show="goods[index].type>0" class="icon" :class="supportsMap[goods[index].type]"></span>{{goods[index].name}}
-          </span>
-        </li>
-      </ul>
-    </div>
-    <div class="foods-wrap" ref="foodsWrap">
-      <ul>
-        <li v-for="(item, index) in goods" class="food-list foot-list-hook">
-          <h1 class="title">{{item.name}}</h1>
-          <ul>
-            <li v-for="food in item.foods" class="food-item">
-              <span class="icon">
-                <img :src="food.icon">
-              </span>
-              <span class="content">
-                <h2 class="name">{{food.name}}</h2>
-                <div class="description" v-show="food.description">{{food.description}}</div>
-                <div class="extra">
-                  <span class="sellCount">月售{{food.sellCount}}份</span>
-                  <span class="rating">好评率{{food.rating}}%</span>
-                </div>
-                <div class="price">
-                  <span class="currentPrice">￥<strong>{{food.price}}</strong></span>
-                  <span class="oldPrice" v-show="food.oldPrice">￥<strong>{{food.oldPrice}}</strong></span>
-                </div>
-              </span>
-            </li>
-          </ul>
-        </li>
-      </ul>
+  <div>
+    <div class="goods">
+      <div class="menu-wrap" ref="menuWrap">
+        <ul>
+          <li v-for="(item,index) in goods" class="menu-item" :class="{'current-item': index === currentIndex}" @click="selectMenu(index,$event)">
+            <span class="text">
+              <span v-show="goods[index].type>0" class="icon" :class="supportsMap[goods[index].type]"></span>{{goods[index].name}}
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="foods-wrap" ref="foodsWrap">
+        <ul>
+          <li v-for="(item, index) in goods" class="food-list foot-list-hook">
+            <h1 class="title">{{item.name}}</h1>
+            <ul>
+              <li v-for="food in item.foods" class="food-item">
+                <span class="icon">
+                  <img :src="food.icon">
+                </span>
+                <span class="content">
+                  <h2 class="name">{{food.name}}</h2>
+                  <div class="description" v-show="food.description">{{food.description}}</div>
+                  <div class="extra">
+                    <span class="sellCount">月售{{food.sellCount}}份</span>
+                    <span class="rating">好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price">
+                    <div class="left">
+                      <span class="currentPrice">￥<strong>{{food.price}}</strong></span>
+                      <span class="oldPrice" v-show="food.oldPrice">￥<strong>{{food.oldPrice}}</strong></span>
+                    </div>
+                    <div class="right">
+                      <controlbtn :food="food"></controlbtn>
+                    </div>
+                  </div>
+                </span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
     </div>
   </div>
 </template>
@@ -41,12 +49,14 @@
 <script type="text/ecmascript-6">
 import data from '../../../data.json';
 import BScroll from 'better-scroll';
+import shopcart from '../shopcart/shopcart.vue';
+import controlbtn from '../controlbtn/controlbtn.vue';
 export default{
-  // props: {
-  //   seller: {
-  //     type: Object
-  //   }
-  // },
+  props: {
+    seller: {
+      type: Object
+    }
+  },
   data () {
     return {
       goods: [],
@@ -102,9 +112,24 @@ export default{
           return i;
         }
       }
-      // 没滚动的情况下,初  始值为0
+      // 没滚动的情况下,初始值为0
       return 0;
+    },
+    selectFoods () {
+      let foods = [];
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      return foods;
     }
+  },
+  components: {
+    shopcart,
+    controlbtn
   },
   created () {
     this.goods = data.goods;
@@ -118,14 +143,13 @@ export default{
   .goods
     display flex
     position absolute
-    margin-top: 1px
     top 174px
-    bottom 58px
+    bottom 46px
+    // padding-bottom 46px
     width 100%
     overflow hidden
     .menu-wrap
       flex 0 0 80px // 固定宽度
-      margin-top: 1px
       width 80px // 兼容安卓
       background #f3f5f7
       .menu-item
@@ -134,7 +158,10 @@ export default{
         width 56px
         height 54px
         &.current-item
-          background: #fff
+          position relative
+          z-index 20
+          margin-top -1px
+          background #fff
           .text
             font-weight 700
             border-none()
@@ -211,18 +238,23 @@ export default{
             .price
               font-size 0
               line-height 24px
-              .currentPrice
-                font-size 10px
-                font-weight normal
-                color rgb(240,20,20)
-                strong
-                  font-size 14px
-                  font-weight 700
-              .oldPrice
-                margin-left: 8px
-                font-size 10px
-                text-decoration line-through
-                color rgb(147, 153, 159)
-                strong
-                  font-weight 700
+              overflow hidden
+              .left
+                float left
+                .currentPrice
+                  font-size 10px
+                  font-weight normal
+                  color rgb(240,20,20)
+                  strong
+                    font-size 14px
+                    font-weight 700
+                .oldPrice
+                  margin-left: 8px
+                  font-size 10px
+                  text-decoration line-through
+                  color rgb(147, 153, 159)
+                  strong
+                    font-weight 700
+              .right
+                float right            
 </style>

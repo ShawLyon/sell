@@ -33,7 +33,7 @@
     </div>
     <transition name="fade">
       <!-- 弹出层 -->
-      <div class="detail" v-show="detailShow" @click="detailClose" transition="fade">
+      <div class="detail" v-show="detailShow" @click="detailClose">
         <div class="detail-wrap clearfix">
           <div class="detail-main">
             <!-- 标题 -->
